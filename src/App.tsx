@@ -1,15 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import {
-  Link,
-  Navigate,
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from 'react-router';
+import { Link, Navigate, Route, Routes, useParams } from 'react-router';
 import './App.css';
 import HeroProvider, { useHeroProvider } from './providers/hero.provider';
-import { flushSync } from 'react-dom';
 
 type Item = {
   id: number;
@@ -52,7 +44,6 @@ const ITEMS: Item[] = [
 
 const ItemList = () => {
   const { setElement } = useHeroProvider();
-  // const navigate = useNavigate();
 
   return (
     <ul className='list'>
@@ -61,10 +52,6 @@ const ItemList = () => {
           <Link
             className='card'
             onClick={(e) => {
-              // e.preventDefault();
-              // document.startViewTransition(() => {
-              //   flushSync(() => navigate(`/items/${item.id}`));
-              // });
               setElement(e.currentTarget.firstElementChild as HTMLElement);
             }}
             to={`/items/${item.id}`}
@@ -136,10 +123,6 @@ const ItemDetail = () => {
       <div
         ref={heroRef}
         className='detail-hero'
-        // style={{
-        //   background: selected.color,
-        //   viewTransitionName: `hero-${selected.id}`,
-        // }}
         style={{ background: selected.color, ...style }}
       >
         {selected.emoji}
