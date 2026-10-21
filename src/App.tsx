@@ -49,8 +49,19 @@ const ITEMS: Item[] = [
   },
 ];
 
-const ItemList = () => {
+const useTransitionNavigate = () => {
   const navigate = useNavigate();
+
+  return (to: string) => {
+    if (!document.startViewTransition) return navigate(to);
+    document.startViewTransition(() => {
+      flushSync(() => navigate(to));
+    });
+  };
+};
+
+const ItemList = () => {
+  const transitionTo = useTransitionNavigate();
 
   return (
     <ul className='list'>
@@ -60,9 +71,7 @@ const ItemList = () => {
             className='card'
             onClick={(e) => {
               e.preventDefault();
-              document.startViewTransition(() => {
-                flushSync(() => navigate(`/items/${item.id}`));
-              });
+              transitionTo(`/items/${item.id}`);
             }}
             to={`/items/${item.id}`}
           >
@@ -87,6 +96,7 @@ const ItemList = () => {
 const ItemDetail = () => {
   const { id } = useParams();
   const selected = ITEMS.find((item) => item.id === Number(id));
+  const transitionTo = useTransitionNavigate();
 
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +116,14 @@ const ItemDetail = () => {
       </div>
       <h2>{selected.title}</h2>
       <p className='detail-text'>{selected.description}</p>
-      <Link className='back' to='/'>
+      <Link
+        className='back'
+        onClick={(e) => {
+          e.preventDefault();
+          transitionTo('/');
+        }}
+        to='/'
+      >
         ← Back
       </Link>
     </article>
