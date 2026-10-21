@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
+import { flushSync } from 'react-dom';
 import {
   Link,
   Navigate,
@@ -8,8 +9,6 @@ import {
   useParams,
 } from 'react-router';
 import './App.css';
-import HeroProvider, { useHeroProvider } from './providers/hero.provider';
-import { flushSync } from 'react-dom';
 
 type Item = {
   id: number;
@@ -51,8 +50,7 @@ const ITEMS: Item[] = [
 ];
 
 const ItemList = () => {
-  const { setElement } = useHeroProvider();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <ul className='list'>
@@ -61,11 +59,10 @@ const ItemList = () => {
           <Link
             className='card'
             onClick={(e) => {
-              // e.preventDefault();
-              // document.startViewTransition(() => {
-              //   flushSync(() => navigate(`/items/${item.id}`));
-              // });
-              setElement(e.currentTarget.firstElementChild as HTMLElement);
+              e.preventDefault();
+              document.startViewTransition(() => {
+                flushSync(() => navigate(`/items/${item.id}`));
+              });
             }}
             to={`/items/${item.id}`}
           >
@@ -88,46 +85,10 @@ const ItemList = () => {
 };
 
 const ItemDetail = () => {
-  const [style, setStyle] = useState<
-    React.HTMLAttributes<HTMLElement>['style']
-  >({});
-
   const { id } = useParams();
   const selected = ITEMS.find((item) => item.id === Number(id));
 
   const heroRef = useRef<HTMLDivElement>(null);
-
-  const { element: elementRect } = useHeroProvider();
-
-  useLayoutEffect(() => {
-    if (!elementRect || !heroRef.current) return;
-
-    const currentRect = elementRect;
-    const heroRect = heroRef.current?.getBoundingClientRect();
-
-    const deltaY = currentRect?.y - heroRect?.y;
-    const deltaX = currentRect?.x - heroRect?.x;
-    const scaleX = currentRect.width / heroRect.width;
-    const scaleY = currentRect.height / heroRect.height;
-
-    setStyle({
-      transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${scaleX}, ${scaleY})`,
-      transformOrigin: 'top left',
-      transition: 'none',
-    });
-
-    const rafId = requestAnimationFrame(() => {
-      setStyle({
-        transform: 'translate3d(0, 0, 0) scale(1, 1)',
-        transformOrigin: 'top left',
-        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(rafId);
-    };
-  }, [elementRect]);
 
   if (!selected) return <Navigate to='/' replace />;
 
@@ -136,11 +97,10 @@ const ItemDetail = () => {
       <div
         ref={heroRef}
         className='detail-hero'
-        // style={{
-        //   background: selected.color,
-        //   viewTransitionName: `hero-${selected.id}`,
-        // }}
-        style={{ background: selected.color, ...style }}
+        style={{
+          background: selected.color,
+          viewTransitionName: `hero-${selected.id}`,
+        }}
       >
         {selected.emoji}
       </div>
@@ -153,43 +113,16 @@ const ItemDetail = () => {
   );
 };
 
-const HeroOverlay = () => {
-  const { element: elementRect } = useHeroProvider();
-
-  return (
-    <aside className='hero-overlay'>
-      <h3>Hero provider</h3>
-      {elementRect ? (
-        <dl>
-          <dt>rect</dt>
-          <dd>
-            {Math.round(elementRect.x)}, {Math.round(elementRect.y)} ·{' '}
-            {Math.round(elementRect.width)}×{Math.round(elementRect.height)}
-          </dd>
-        </dl>
-      ) : (
-        <p>No element set</p>
-      )}
-    </aside>
-  );
-};
-
 const App = () => {
   return (
     <main className='app'>
       <h1>View Transitions API</h1>
 
-      <div>
-        <HeroProvider>
-          <Routes>
-            <Route path='/' element={<ItemList />} />
-            <Route path='/items/:id' element={<ItemDetail />} />
-            <Route path='*' element={<Navigate to='/' replace />} />
-          </Routes>
-
-          <HeroOverlay />
-        </HeroProvider>
-      </div>
+      <Routes>
+        <Route path='/' element={<ItemList />} />
+        <Route path='/items/:id' element={<ItemDetail />} />
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
     </main>
   );
 };
