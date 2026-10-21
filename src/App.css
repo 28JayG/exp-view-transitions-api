@@ -1,0 +1,149 @@
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+h1 {
+  font-size: 1.25rem;
+  margin: 0 0 24px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.card-emoji {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 1.6rem;
+}
+
+.detail {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.detail-hero {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  border-radius: 12px;
+  font-size: 5rem;
+  will-change: transform;
+}
+
+.detail h2 {
+  margin: 16px 0 8px;
+  font-size: 1.75rem;
+  width: fit-content;
+}
+
+.detail-text {
+  margin: 0 0 20px;
+  opacity: 0.8;
+}
+
+.detail .back {
+  display: inline-block;
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hero-overlay {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 220px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.hero-overlay h3 {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+.hero-overlay dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.hero-overlay dt {
+  opacity: 0.6;
+}
+
+.hero-overlay dd {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+.hero-overlay p {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.card-emoji,
+.detail-hero {
+  view-transition-class: hero;
+}
+
+::view-transition-group(.hero) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(.hero),
+::view-transition-new(.hero) {
+  height: 100%;
+  object-fit: none;
+  overflow: clip;
+}
